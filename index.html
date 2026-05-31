@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8 Planets, 64 Numbers Game</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            margin-top: 30px;
+        }
+        #start-screen {
+            margin-top: 50px;
+        }
+        #game-screen {
+            display: none;
+        }
+        #number-display {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 20px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            display: inline-block;
+            min-width: 100px;
+            border-radius: 8px;
+            transition: background-color 0.1s ease;
+        }
+        .button-container {
+            display: grid;
+            grid-template-columns: repeat(4, 150px);
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        button {
+            padding: 15px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        #start-btn {
+            padding: 20px 40px;
+            font-size: 22px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+        }
+        .stats-container {
+            margin-top: 40px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            display: inline-block;
+            min-width: 200px;
+            border-radius: 8px;
+            text-align: left;
+        }
+        .stats-line {
+            font-size: 18px;
+            margin: 5px 0;
+        }
+        #result {
+            margin-top: 30px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            white-space: pre-line;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>八大组合64组星属数字游戏</h1>
+    
+    <div id="start-screen">
+        <button id="start-btn" onclick="startGame()">开始游戏 (Start Game)</button>
+    </div>
+
+    <div id="game-screen">
+        <div id="number-display">---</div>
+
+        <div class="button-container">
+            <button onclick="checkAnswer('金星')">金星</button>
+            <button onclick="checkAnswer('木星')">木星</button>
+            <button onclick="checkAnswer('水星')">水星</button>
+            <button onclick="checkAnswer('土星')">土星</button>
+            <button onclick="checkAnswer('火星')">火星</button>
+            <button onclick="checkAnswer('天王星')">天王星</button>
+            <button onclick="checkAnswer('海王星')">海王星</button>
+            <button onclick="checkAnswer('冥王星')">冥王星</button>
+        </div>
+
+        <div class="stats-container">
+            <div class="stats-line">⏱️ 时间 (Time): <span id="stat-time">0.00</span> 秒</div>
+            <div class="stats-line">🎯 得分 (Score): <span id="stat-score">0.00%</span></div>
+        </div>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const planetGroups = {
+            "金星": [13, 31, 68, 86, 49, 94, 27, 72],
+            "木星": [19, 91, 78, 87, 34, 43, 26, 62],
+            "水星": [14, 41, 67, 76, 39, 93, 28, 82],
+            "土星": [11, 22, 99, 88, 77, 66, 44, 33],
+            "火星": [17, 71, 89, 98, 46, 64, 23, 32],
+            "天王星": [12, 21, 69, 96, 48, 84, 37, 73],
+            "海王星": [16, 61, 47, 74, 38, 83, 29, 92],
+            "冥王星": [18, 81, 79, 97, 36, 63, 24, 42]
+        };
+
+        let gameNumbers = [];
+        for (let planet in planetGroups) {
+            planetGroups[planet].forEach(num => {
+                gameNumbers.push({ number: num, planet: planet });
+            });
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        let currentIndex = 0;
+        let score = 0;
+        let startTime = 0;
+        let timerInterval = null;
+        let flashTimeout = null;
+
+        const numDisplay = document.getElementById("number-display");
+        const resultDisplay = document.getElementById("result");
+        const statTime = document.getElementById("stat-time");
+        const statScore = document.getElementById("stat-score");
+
+        function startGame() {
+            document.getElementById("start-screen").style.display = "none";
+            document.getElementById("game-screen").style.display = "block";
+            
+            currentIndex = 0;
+            score = 0;
+            statScore.innerText = "0.00%";
+            statTime.innerText = "0.00";
+            resultDisplay.innerText = "";
+            numDisplay.style.backgroundColor = "#f0f0f0";
+            numDisplay.style.color = "black";
+            
+            shuffle(gameNumbers);
+            showNextNumber();
+            
+            startTime = Date.now();
+            timerInterval = setInterval(() => {
+                statTime.innerText = ((Date.now() - startTime) / 1000).toFixed(2);
+            }, 10);
+        }
+
+        function showNextNumber() {
+            if (currentIndex < gameNumbers.length) {
+                numDisplay.innerText = gameNumbers[currentIndex].number;
+                numDisplay.style.backgroundColor = "#f0f0f0";
+                numDisplay.style.color = "black";
+            } else {
+                endGame();
+            }
+        }
+
+        function checkAnswer(selectedPlanet) {
+            if (currentIndex >= gameNumbers.length) return;
+
+            clearTimeout(flashTimeout);
+
+            const currentItem = gameNumbers[currentIndex];
+            if (selectedPlanet === currentItem.planet) {
+                score++;
+                numDisplay.style.backgroundColor = "#d4edda";
+                numDisplay.style.color = "#155724";
+            } else {
+                numDisplay.style.backgroundColor = "#f8d7da";
+                numDisplay.style.color = "#721c24";
+            }
+
+            statScore.innerText = ((score / 64) * 100).toFixed(2) + "%";
+            currentIndex++;
+
+            flashTimeout = setTimeout(() => {
+                showNextNumber();
+            }, 200);
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            numDisplay.innerText = "🎉";
+            numDisplay.style.backgroundColor = "#f0f0f0";
+            numDisplay.style.color = "black";
+            resultDisplay.innerText = `游戏结束! (Game Over!)\n最终得分 (Final Score): ${statScore.innerText}\n时间 (Time): ${statTime.innerText} 秒`;
+            resultDisplay.style.color = "#2c3e50";
+            document.getElementById("start-screen").style.display = "block";
+            document.getElementById("start-btn").innerText = "再玩一次 (Play Again)";
+        }
+    </script>
+</body>
+</html>
