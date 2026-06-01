@@ -21,7 +21,7 @@
             margin: 10px 0 20px 0;
         }
         #start-screen {
-            margin-top: 20vh;
+            margin-top: 15vh;
         }
         #game-screen {
             display: none;
@@ -71,6 +71,18 @@
             width: 80%;
             max-width: 400px;
             box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+            margin-bottom: 15px;
+        }
+        #chart-btn {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 400px;
+            box-shadow: 0 4px 10px rgba(33, 150, 243, 0.3);
         }
         .stats-container {
             margin-top: 15px;
@@ -95,7 +107,135 @@
             line-height: 1.5;
         }
 
-        /* Phone layout */
+        /* Chart Overlay / Modal CSS */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 200;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            overflow-y: auto;
+            padding: 20px 10px;
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: auto;
+            padding: 20px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            text-align: left;
+            position: relative;
+        }
+        .close-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            float: right;
+            margin-bottom: 15px;
+        }
+        .chart-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            clear: both;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        .chart-row {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 16px;
+        }
+        .chart-planet {
+            font-weight: bold;
+            width: 100px;
+            flex-shrink: 0;
+            color: #0b57d0;
+        }
+        .chart-numbers {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-family: monospace;
+            font-size: 16px;
+        }
+
+        /* Like and Share Component CSS */
+        .engagement-container {
+            margin: 30px auto;
+            padding: 20px;
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            max-width: 340px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: opacity 0.3s ease;
+        }
+        .engagement-text {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #555;
+            line-height: 1.4;
+        }
+        .like-button-wrapper {
+            display: inline-flex;
+            align-items: center;
+            background-color: #f2f2f2;
+            border-radius: 20px;
+            padding: 0;
+            overflow: hidden;
+            border: none;
+        }
+        .like-btn, .forward-btn {
+            background: none;
+            border: none;
+            box-shadow: none;
+            padding: 8px 16px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-radius: 0;
+            cursor: pointer;
+            color: #0f0f0f;
+            transition: background-color 0.2s;
+        }
+        .like-btn {
+            border-right: 1px solid #d9d9d9;
+        }
+        .like-btn:hover, .forward-btn:hover {
+            background-color: #e5e5e5;
+        }
+        .like-btn.liked {
+            color: #05560b;
+            background-color: #e6f4ea;
+        }
+        .like-btn.liked svg {
+            fill: #05560b;
+        }
+        .like-count {
+            font-size: 14px;
+            font-weight: 500;
+            color: #0f0f0f;
+            margin-left: 4px;
+        }
+        .like-btn.liked .like-count {
+            color: #05560b;
+            font-weight: bold;
+        }
+
+        /* Layout Media Queries */
         @media (max-width: 767px) {
             #game-screen {
                 max-width: 500px;
@@ -105,8 +245,11 @@
             }
         }
 
-        /* Computer full screen wide mode layout */
         @media (min-width: 768px) {
+            body {
+                position: relative;
+                padding-bottom: 100px;
+            }
             #game-screen {
                 max-width: 100%;
                 padding: 0 40px;
@@ -121,6 +264,30 @@
                 margin-left: auto;
                 margin-right: auto;
             }
+            .engagement-container {
+                position: fixed;
+                right: 30px;
+                top: 120px;
+                margin: 0;
+                width: 250px;
+                text-align: center;
+                z-index: 100;
+            }
+            .like-button-wrapper {
+                flex-direction: column;
+                border-radius: 12px;
+                width: 100%;
+            }
+            .like-btn {
+                border-right: none;
+                border-bottom: 1px solid #d9d9d9;
+                width: 100%;
+                justify-content: center;
+            }
+            .forward-btn {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -129,7 +296,8 @@
     <h1>八大星属64组数字游戏</h1>
     
     <div id="start-screen">
-        <button id="start-btn" onclick="startGame()">开始游戏 (Start Game)</button>
+        <button id="start-btn" onclick="startGame()">开始游戏 (Start Game)</button><br>
+        <button id="chart-btn" onclick="openChart()">查看星属图表 (View Chart)</button>
     </div>
 
     <div id="game-screen">
@@ -154,6 +322,32 @@
         <div id="result"></div>
     </div>
 
+    <div id="chart-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeChart()">关闭 (Close)</button>
+            <div class="chart-title">🪐 星属数字图表 (Planet Numbers Reference)</div>
+            <div id="chart-body"></div>
+        </div>
+    </div>
+
+    <div id="engagement-panel" class="engagement-container">
+        <div class="engagement-text">Like the game? 👍<br>Share it with your friends!</div>
+        <div class="like-button-wrapper">
+            <button id="like-toggle-btn" class="like-btn" onclick="toggleLike()">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="display:inline-block; vertical-align:middle;">
+                    <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/>
+                </svg>
+                <span id="like-counter" class="like-count">0</span>
+            </button>
+            <button class="forward-btn" onclick="shareGame()" title="Forward / Share">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="display:inline-block; vertical-align:middle;">
+                    <path d="M14 9V5l7 7-7 7v-4.1c-5 0-8.5 1.6-11 5.1 1-5 4-10 11-11z"/>
+                </svg>
+                <span>Forward</span>
+            </button>
+        </div>
+    </div>
+
     <script>
         const planetGroups = {
             "金星": [13, 31, 68, 86, 49, 94, 27, 72],
@@ -164,6 +358,18 @@
             "天王星": [12, 21, 69, 96, 48, 84, 37, 73],
             "海王星": [16, 61, 47, 74, 38, 83, 29, 92],
             "冥王星": [18, 81, 79, 97, 36, 63, 24, 42]
+        };
+
+        // UI translation helper for the chart view
+        const planetMappingEN = {
+            "金星": "Venus",
+            "木星": "Jupiter",
+            "水星": "Mercury",
+            "土星": "Saturn",
+            "火星": "Mars",
+            "天王星": "Uranus",
+            "海王星": "Neptune",
+            "冥王星": "Pluto"
         };
 
         let gameNumbers = [];
@@ -190,10 +396,13 @@
         const resultDisplay = document.getElementById("result");
         const statTime = document.getElementById("stat-time");
         const statScore = document.getElementById("stat-score");
+        const engagementPanel = document.getElementById("engagement-panel");
+        const chartModal = document.getElementById("chart-modal");
 
         function startGame() {
             document.getElementById("start-screen").style.display = "none";
             document.getElementById("game-screen").style.display = "block";
+            engagementPanel.style.display = "none";
             
             currentIndex = 0;
             score = 0;
@@ -254,6 +463,90 @@
             resultDisplay.style.color = "#2c3e50";
             document.getElementById("start-screen").style.display = "block";
             document.getElementById("start-btn").innerText = "再玩一次 (Play Again)";
+            engagementPanel.style.display = "block";
+        }
+
+        /* Chart Functions */
+        function openChart() {
+            const chartBody = document.getElementById("chart-body");
+            chartBody.innerHTML = ""; // Clear existing elements
+            
+            for (let planet in planetGroups) {
+                const row = document.createElement("div");
+                row.className = "chart-row";
+                
+                const planetLabel = document.createElement("div");
+                planetLabel.className = "chart-planet";
+                planetLabel.innerText = `${planet} (${planetMappingEN[planet]}):`;
+                
+                const numbersContainer = document.createElement("div");
+                numbersContainer.className = "chart-numbers";
+                
+                // Group numbers in paired format (e.g., 14/41)
+                const nums = planetGroups[planet];
+                for(let i = 0; i < nums.length; i += 2) {
+                    const span = document.createElement("span");
+                    span.innerText = `${nums[i]}/${nums[i+1]}`;
+                    numbersContainer.appendChild(span);
+                }
+                
+                row.appendChild(planetLabel);
+                row.appendChild(numbersContainer);
+                chartBody.appendChild(row);
+            }
+            
+            chartModal.style.display = "block";
+        }
+
+        function closeChart() {
+            chartModal.style.display = "none";
+        }
+
+        // Close chart if modal backdrop is clicked
+        window.onclick = function(event) {
+            if (event.target == chartModal) {
+                closeChart();
+            }
+        }
+
+        /* Like System Configuration */
+        const baseLikes = 0; 
+        const likeBtn = document.getElementById("like-toggle-btn");
+        const likeCounter = document.getElementById("like-counter");
+
+        if (localStorage.getItem("hasLikedGame") === "true") {
+            likeBtn.classList.add("liked");
+            likeCounter.innerText = baseLikes + 1;
+        } else {
+            likeCounter.innerText = baseLikes;
+        }
+
+        function toggleLike() {
+            const hasLiked = localStorage.getItem("hasLikedGame") === "true";
+            
+            if (!hasLiked) {
+                localStorage.setItem("hasLikedGame", "true");
+                likeBtn.classList.add("liked");
+                likeCounter.innerText = baseLikes + 1;
+            } else {
+                localStorage.removeItem("hasLikedGame");
+                likeBtn.classList.remove("liked");
+                likeCounter.innerText = baseLikes;
+            }
+        }
+
+        /* Forward / Share Action Functionality */
+        function shareGame() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '8 Planets, 64 Numbers Game',
+                    text: 'Check out this awesome numbers challenge game!',
+                    url: window.location.href
+                }).catch(console.error);
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert("Game link copied to clipboard! Share it with your friends.");
+            }
         }
     </script>
 </body>
