@@ -5,41 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>8 Planets, 64 Numbers Game</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
         body {
             text-align: center;
             font-family: Arial, sans-serif;
-            margin-top: 30px;
+            margin: 0;
+            padding: 15px;
+            background-color: #fafafa;
+            color: #333;
+        }
+        h1 {
+            font-size: 24px;
+            margin: 10px 0 20px 0;
         }
         #start-screen {
-            margin-top: 50px;
+            margin-top: 20vh;
         }
         #game-screen {
             display: none;
+            width: 100%;
+            margin: 0 auto;
         }
         #number-display {
-            font-size: 48px;
+            font-size: 56px;
             font-weight: bold;
-            margin: 20px;
-            padding: 10px;
+            margin: 15px auto;
+            padding: 15px;
             background-color: #f0f0f0;
-            display: inline-block;
-            min-width: 100px;
-            border-radius: 8px;
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            border-radius: 12px;
             transition: background-color 0.1s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
         .button-container {
             display: grid;
-            grid-template-columns: repeat(4, 150px);
             gap: 15px;
-            justify-content: center;
-            margin-top: 20px;
+            margin: 20px 0;
+            width: 100%;
         }
         button {
-            padding: 15px;
-            font-size: 16px;
+            padding: 18px 10px;
+            font-size: 18px;
+            font-weight: bold;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 8px;
             border: 1px solid #ccc;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            -webkit-tap-highlight-color: transparent;
+        }
+        button:active {
+            background-color: #e0e0e0;
         }
         #start-btn {
             padding: 20px 40px;
@@ -48,27 +68,59 @@
             color: white;
             border: none;
             border-radius: 8px;
+            width: 80%;
+            max-width: 400px;
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
         }
         .stats-container {
-            margin-top: 40px;
+            margin-top: 15px;
             padding: 15px;
             background-color: #f9f9f9;
             border: 1px solid #ddd;
-            display: inline-block;
-            min-width: 200px;
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
             border-radius: 8px;
-            text-align: left;
         }
         .stats-line {
             font-size: 18px;
-            margin: 5px 0;
+            margin: 0;
         }
         #result {
-            margin-top: 30px;
-            font-size: 24px;
+            margin-top: 20px;
+            font-size: 20px;
             font-weight: bold;
             color: #2c3e50;
             white-space: pre-line;
+            line-height: 1.5;
+        }
+
+        /* Phone layout */
+        @media (max-width: 767px) {
+            #game-screen {
+                max-width: 500px;
+            }
+            .button-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Computer full screen wide mode layout */
+        @media (min-width: 768px) {
+            #game-screen {
+                max-width: 100%;
+                padding: 0 40px;
+            }
+            .button-container {
+                grid-template-columns: repeat(4, 1fr);
+                max-width: 1200px;
+                margin: 30px auto;
+            }
+            .stats-container {
+                max-width: 600px;
+                margin-left: auto;
+                margin-right: auto;
+            }
         }
     </style>
 </head>
@@ -95,8 +147,8 @@
         </div>
 
         <div class="stats-container">
-            <div class="stats-line">⏱️ 时间 (Time): <span id="stat-time">0.00</span> 秒</div>
-            <div class="stats-line">🎯 得分 (Score): <span id="stat-score">0.00%</span></div>
+            <div class="stats-line">⏱️ <span id="stat-time">0.00</span> 秒</div>
+            <div class="stats-line">🎯 <span id="stat-score">0.00%</span></div>
         </div>
 
         <div id="result"></div>
