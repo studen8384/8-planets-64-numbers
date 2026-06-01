@@ -170,8 +170,9 @@
             font-size: 16px;
         }
 
-        /* Like and Share Component CSS */
+        /* Like and Share Component CSS (Hidden by default until game finishes) */
         .engagement-container {
+            display: none;
             margin: 30px auto;
             padding: 20px;
             background: #ffffff;
@@ -179,7 +180,6 @@
             border-radius: 12px;
             max-width: 340px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            transition: opacity 0.3s ease;
         }
         .engagement-text {
             font-size: 16px;
@@ -360,7 +360,6 @@
             "冥王星": [18, 81, 79, 97, 36, 63, 24, 42]
         };
 
-        // UI translation helper for the chart view
         const planetMappingEN = {
             "金星": "Venus",
             "木星": "Jupiter",
@@ -402,6 +401,8 @@
         function startGame() {
             document.getElementById("start-screen").style.display = "none";
             document.getElementById("game-screen").style.display = "block";
+            
+            // Keep engagement panel completely hidden while playing
             engagementPanel.style.display = "none";
             
             currentIndex = 0;
@@ -463,13 +464,15 @@
             resultDisplay.style.color = "#2c3e50";
             document.getElementById("start-screen").style.display = "block";
             document.getElementById("start-btn").innerText = "再玩一次 (Play Again)";
+            
+            // Only reveal the engagement element system once the game session has officially ended
             engagementPanel.style.display = "block";
         }
 
         /* Chart Functions */
         function openChart() {
             const chartBody = document.getElementById("chart-body");
-            chartBody.innerHTML = ""; // Clear existing elements
+            chartBody.innerHTML = ""; 
             
             for (let planet in planetGroups) {
                 const row = document.createElement("div");
@@ -482,7 +485,6 @@
                 const numbersContainer = document.createElement("div");
                 numbersContainer.className = "chart-numbers";
                 
-                // Group numbers in paired format (e.g., 14/41)
                 const nums = planetGroups[planet];
                 for(let i = 0; i < nums.length; i += 2) {
                     const span = document.createElement("span");
@@ -502,7 +504,6 @@
             chartModal.style.display = "none";
         }
 
-        // Close chart if modal backdrop is clicked
         window.onclick = function(event) {
             if (event.target == chartModal) {
                 closeChart();
