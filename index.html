@@ -20,8 +20,37 @@
             font-size: 24px;
             margin: 10px 0 20px 0;
         }
+        #name-screen {
+            margin-top: 20vh;
+        }
+        #name-input {
+            padding: 12px;
+            font-size: 18px;
+            width: 80%;
+            max-width: 300px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            text-align: center;
+        }
+        #submit-name-btn {
+            padding: 12px 25px;
+            font-size: 18px;
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
         #start-screen {
-            margin-top: 15vh;
+            display: none;
+            margin-top: 10vh;
+        }
+        #welcome-msg {
+            font-size: 20px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #555;
         }
         #game-screen {
             display: none;
@@ -107,6 +136,42 @@
             line-height: 1.5;
         }
 
+        /* Leaderboard Styling */
+        .leaderboard-container {
+            margin: 30px auto;
+            max-width: 400px;
+            padding: 15px;
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+        }
+        .leaderboard-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #444;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 5px;
+        }
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 15px;
+        }
+        .leaderboard-table th, .leaderboard-table td {
+            padding: 8px;
+            text-align: left;
+        }
+        .leaderboard-table th {
+            color: #666;
+            font-weight: bold;
+            border-bottom: 1px solid #ddd;
+        }
+        .leaderboard-table tr:nth-child(even) {
+            background-color: #fcfcfc;
+        }
+
         /* Chart Overlay / Modal CSS */
         .modal {
             display: none;
@@ -170,7 +235,7 @@
             font-size: 16px;
         }
 
-        /* Like and Share Component CSS (Hidden by default until game finishes) */
+        /* Like Component CSS (Hidden by default until game finishes) */
         .engagement-container {
             display: none;
             margin: 30px auto;
@@ -197,7 +262,7 @@
             overflow: hidden;
             border: none;
         }
-        .like-btn, .forward-btn {
+        .like-btn {
             background: none;
             border: none;
             box-shadow: none;
@@ -211,10 +276,7 @@
             color: #0f0f0f;
             transition: background-color 0.2s;
         }
-        .like-btn {
-            border-right: 1px solid #d9d9d9;
-        }
-        .like-btn:hover, .forward-btn:hover {
+        .like-btn:hover {
             background-color: #e5e5e5;
         }
         .like-btn.liked {
@@ -279,12 +341,6 @@
                 width: 100%;
             }
             .like-btn {
-                border-right: none;
-                border-bottom: 1px solid #d9d9d9;
-                width: 100%;
-                justify-content: center;
-            }
-            .forward-btn {
                 width: 100%;
                 justify-content: center;
             }
@@ -295,9 +351,32 @@
 
     <h1>八大星属64组数字游戏</h1>
     
+    <div id="name-screen">
+        <h2>请输入您的名字 (Enter Your Name)</h2>
+        <input type="text" id="name-input" placeholder="Your Name" maxlength="20"><br>
+        <button id="submit-name-btn" onclick="saveName()">确定 (Submit)</button>
+    </div>
+
     <div id="start-screen">
+        <div id="welcome-msg"></div>
         <button id="start-btn" onclick="startGame()">开始游戏 (Start Game)</button><br>
         <button id="chart-btn" onclick="openChart()">查看星属图表 (View Chart)</button>
+        
+        <div class="leaderboard-container">
+            <div class="leaderboard-title">🏆 排行榜 (Leaderboard)</div>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>排名</th>
+                        <th>名字</th>
+                        <th>最高得分</th>
+                        <th>用时</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                    </tbody>
+            </table>
+        </div>
     </div>
 
     <div id="game-screen">
@@ -331,19 +410,13 @@
     </div>
 
     <div id="engagement-panel" class="engagement-container">
-        <div class="engagement-text">Like the game? 👍<br>Share it with your friends!</div>
+        <div class="engagement-text">Like the game? 👍</div>
         <div class="like-button-wrapper">
             <button id="like-toggle-btn" class="like-btn" onclick="toggleLike()">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="display:inline-block; vertical-align:middle;">
                     <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/>
                 </svg>
                 <span id="like-counter" class="like-count">0</span>
-            </button>
-            <button class="forward-btn" onclick="shareGame()" title="Forward / Share">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="display:inline-block; vertical-align:middle;">
-                    <path d="M14 9V5l7 7-7 7v-4.1c-5 0-8.5 1.6-11 5.1 1-5 4-10 11-11z"/>
-                </svg>
-                <span>Forward</span>
             </button>
         </div>
     </div>
@@ -385,6 +458,7 @@
             }
         }
 
+        let playerIdentity = "";
         let currentIndex = 0;
         let score = 0;
         let startTime = 0;
@@ -397,12 +471,39 @@
         const statScore = document.getElementById("stat-score");
         const engagementPanel = document.getElementById("engagement-panel");
         const chartModal = document.getElementById("chart-modal");
+        const nameScreen = document.getElementById("name-screen");
+        const startScreen = document.getElementById("start-screen");
+
+        // App initialization hook check for existing player profile data
+        window.onload = function() {
+            const savedName = localStorage.getItem("gamePlayerName");
+            if (savedName) {
+                playerIdentity = savedName;
+                showStartScreen();
+            }
+            renderLeaderboard();
+        };
+
+        function saveName() {
+            const nameInput = document.getElementById("name-input").value.trim();
+            if (!nameInput) {
+                alert("Please enter a valid name!");
+                return;
+            }
+            playerIdentity = nameInput;
+            localStorage.setItem("gamePlayerName", playerIdentity);
+            showStartScreen();
+        }
+
+        function showStartScreen() {
+            nameScreen.style.display = "none";
+            startScreen.style.display = "block";
+            document.getElementById("welcome-msg").innerText = `你好, ${playerIdentity}!`;
+        }
 
         function startGame() {
-            document.getElementById("start-screen").style.display = "none";
+            startScreen.style.display = "none";
             document.getElementById("game-screen").style.display = "block";
-            
-            // Keep engagement panel completely hidden while playing
             engagementPanel.style.display = "none";
             
             currentIndex = 0;
@@ -457,16 +558,77 @@
 
         function endGame() {
             clearInterval(timerInterval);
+            const finalTime = parseFloat(statTime.innerText);
+            
             numDisplay.innerText = "🎉";
             numDisplay.style.backgroundColor = "#f0f0f0";
             numDisplay.style.color = "black";
-            resultDisplay.innerText = `游戏结束! (Game Over!)\n最终得分 (Final Score): ${statScore.innerText}\n时间 (Time): ${statTime.innerText} 秒`;
+            resultDisplay.innerText = `游戏结束! (Game Over!)\n最终得分 (Final Score): ${statScore.innerText}\n时间 (Time): ${finalTime} 秒`;
             resultDisplay.style.color = "#2c3e50";
-            document.getElementById("start-screen").style.display = "block";
-            document.getElementById("start-btn").innerText = "再玩一次 (Play Again)";
             
-            // Only reveal the engagement element system once the game session has officially ended
+            updateLeaderboardData(playerIdentity, score, finalTime);
+            
+            startScreen.style.display = "block";
+            document.getElementById("start-btn").innerText = "再玩一次 (Play Again)";
             engagementPanel.style.display = "block";
+        }
+
+        /* Leaderboard Compute Operations */
+        function updateLeaderboardData(name, score, time) {
+            let leaderboard = JSON.parse(localStorage.getItem("gameLeaderboard")) || [];
+            
+            const recordIndex = leaderboard.findIndex(item => item.name.toLowerCase() === name.toLowerCase());
+            
+            if (recordIndex !== -1) {
+                // Keep record if current session yields a higher score, or equal score with a faster time run
+                if (score > leaderboard[recordIndex].score || 
+                   (score === leaderboard[recordIndex].score && time < leaderboard[recordIndex].time)) {
+                    leaderboard[recordIndex].score = score;
+                    leaderboard[recordIndex].time = time;
+                }
+            } else {
+                leaderboard.push({ name: name, score: score, time: time });
+            }
+            
+            // Sort primary by high score down, then tie break by faster elapsed time performance up
+            leaderboard.sort((a, b) => {
+                if (b.score !== a.score) {
+                    return b.score - a.score;
+                }
+                return a.time - b.time;
+            });
+            
+            localStorage.setItem("gameLeaderboard", JSON.stringify(leaderboard));
+            renderLeaderboard();
+        }
+
+        function renderLeaderboard() {
+            const leaderboard = JSON.parse(localStorage.getItem("gameLeaderboard")) || [];
+            const tbody = document.getElementById("leaderboard-body");
+            tbody.innerHTML = "";
+            
+            if(leaderboard.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#999;">暂无数据 (No Records)</td></tr>`;
+                return;
+            }
+            
+            leaderboard.forEach((entry, idx) => {
+                const percentage = ((entry.score / 64) * 100).toFixed(2) + "%";
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td><strong>${idx + 1}</strong></td>
+                    <td>${escapeHTML(entry.name)}</td>
+                    <td>${entry.score}/64 (${percentage})</td>
+                    <td>${entry.time.toFixed(2)}s</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
         }
 
         /* Chart Functions */
@@ -533,20 +695,6 @@
                 localStorage.removeItem("hasLikedGame");
                 likeBtn.classList.remove("liked");
                 likeCounter.innerText = baseLikes;
-            }
-        }
-
-        /* Forward / Share Action Functionality */
-        function shareGame() {
-            if (navigator.share) {
-                navigator.share({
-                    title: '8 Planets, 64 Numbers Game',
-                    text: 'Check out this awesome numbers challenge game!',
-                    url: window.location.href
-                }).catch(console.error);
-            } else {
-                navigator.clipboard.writeText(window.location.href);
-                alert("Game link copied to clipboard! Share it with your friends.");
             }
         }
     </script>
